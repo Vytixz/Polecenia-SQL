@@ -1,0 +1,93 @@
+1.Wymień wszystkie informacje i tabele 
+SELECT * FROM pytania
+2.wyświetl tylko kolumnę treść z tabeli pytania
+SELECT tresc FROM pytania
+3.wyświetl treść pytania i wszystkie jego odpowiedzi
+SELECT tresc, odpa, odpb, odpc, odpd FROM pytania
+
+4. Znajdź w bazie:
+1. Pytanie nr 15
+SELECT * FROM pytania WHERE id=15
+2. Pytania, w których poprawną odpowiedzią jest "a"
+SELECT * FROM pytania WHERE answer="a"
+3. Pytania z roku 2007
+SELECT * FROM pytania WHERE rok=2007
+4. Pytania z programowania z roku 2009
+SELECT * FROM pytania WHERE kategoria="programowanie" AND rok=2009
+5. Tylko treści pytań i 4 odpowiedzi z roku 2010
+SELECT tresc,odpa,odpb,odpc,odpd FROM pytania WHERE rok=2010
+6. Pytania ułożone alfabetycznie wg treści
+SELECT * FROM pytania ORDER BY tresc
+7. Treści pytań o numerach 10-12
+SELECT id,tresc FROM pytania WHERE id>=10 AND id<=12
+SELECT id,tresc FROM pytania WHERE id BETWEEN 10 AND 12
+8. Pytania zaczynające się od słów “Jak”
+SELECT * FROM pytania WHERE tresc LIKE "Jak%"
+9. Pytania zawierające frazę "C++"
+SELECT * FROM pytania WHERE tresc LIKE "%C++%" OR odpa LIKE "%C++%" OR odpb LIKE "%C++%" OR odpc LIKE "%C++%" OR odpd LIKE "%C++%"
+
+10. Pytania z programowania oraz systemów operacyjnych i sieci z roku 2012
+SELECT * FROM pytania WHERE (kategoria="programowanie" OR kategoria="systemy operacyjne i sieci") AND rok=2012
+
+Znajdź w bazie:
+1. Książki ułożone alfabetycznie wg tytułu
+SELECT * FROM ksiazki ORDER BY tytul ASC
+2. Najdroższą książkę w bazie
+SELECT * FROM ksiazki ORDER BY cena DESC LIMIT 1
+3. Wszystkie wysłane zamówienia
+SELECT * FROM zamowienia WHERE status="wyslano"
+4. Wszystkich klientów o nazwisku Rutkowski
+SELECT * FROM klienci WHERE nazwisko=”Rutkowski”
+5. Książki zawierające wyrażenie "PHP" w tytule
+SELECT * FROM ksiazki WHERE tytul LIKE ”%PHP%”
+6. Zamówienia ułożone od ostatnio dokonanego
+SELECT * FROM zamówienia ORDER BY data DESC
+Zapytania związane z łączeniem tabel: 
+7. Wyjmij dla wszystkich zamówień: imię i nazwisko klienta zamawiającego, id zamówienia, datę zamówienia 
+SELECT klienci.imie, klienci.nazwisko, zamowienia.idzamowienia, zamowienia.data FROM klienci, zamowienia WHERE klienci.idklienta = zamowienia.idklienta
+7a. Jak w punkcie 7, ale z aliasami (przezwiskami) dla tabel
+SELECT k.imie, k.nazwisko, z.idzamowienia, z.data FROM klienci AS k, zamowienia AS z WHERE k.idklienta = z.idklienta
+
+
+
+ 8. Imiona i nazwiska osób, które zamówiły kiedykolwiek książkę nr 2
+SELECT klienci.imie, klienci.nazwisko FROM klienci, zamowienia WHERE zamowienia.idksiazki = 2 AND zamowienia.idklienta = klienci.idklienta
+SELECT k.imie, k.nazwisko FROM klienci AS k, zamowienia AS z WHERE z.idksiazki = 2 AND z.idklienta = k.idklienta
+ 9. Jakie książki (tytuł, autor) zamówiła osoba: Jan Nowak? 
+SELECT ksiazki.tytul, ksiazki.imieautora, ksiazki.nazwiskoautora FROM ksiazki, zamowienia WHERE zamowienia.idklienta = 2 AND zamowienia.idksiazki = ksiazki.idksiazki
+10. Zamówienia dokonane przez osoby o nazwisku Rutkowski ułożone wg daty od najpóźniej dokonanych (imię i nazwisko osoby zamawiającej, id, datę i status zamówienia, tytuł zamówionej książki)
+SELECT klienci.imie, klienci.nazwisko, zamowienia.idzamowienia, zamowienia.status, zamowienia.data,       ksiazki.tytul FROM klienci, zamowienia, ksiazki WHERE klienci.nazwisko="Rutkowski" AND zamowienia.idksiazki = ksiazki.idksiazki AND klieci.idklienta = zamowienia.idklienta ORDER BY zamowienia.data DESC
+SELECT k.imie, k.nazwisko, z.idzamowienia, z.status, z.data, ks.tytul FROM klienci AS k, zamowienia AS z, ksiazki AS ks WHERE k.nazwisko="Rutkowski" AND z.idksiazki = ks.idksiazki AND k.idklienta = z.idklienta ORDER BY z.data DESC
+NAPISZ ZAPYTANIA, KTÓRE WYJMĄ Z BAZY NASTĘPUJĄCE INFORMACJE:
+Imię i nazwisko (tylko te dwie dane) klienta numer 4.
+SELECT imie, nazwisko FROM klienci WHERE idklienta = 4
+Wszystkie dane samochodów z rocznika 2010. 
+SELECT * FROM auta WHERE rocznik = 2010
+
+Wszystkie dane na temat samochodów marki Ford posiadanych przez nas (innymi słowy: "jakie mamy auta marki Ford w firmie i co o nich wiemy?"). 
+SELECT * FROM auta WHERE marka = "Ford"
+
+Samochody o numerach w bazie od 2 do 4 włącznie. 
+SELECT marka, model FROM auta WHERE idauta BETWEEN 2 AND 4
+
+Imiona i nazwiska klientów, którzy mieszkają w Katowicach na ulicy Rolnej (pod dowolnym numerem). 
+SELECT imie, nazwisko FROM klienci WHERE miasto=”Katowice” AND adres LIKE ”%Rolna%”
+Samochód w bazie (marka, model), którego ubezpieczenie jest najdroższe z wszystkich aut.
+SELECT model, marka FROM auta ORDER BY ubezpieczenie DESC LIMIT 1
+
+Samochód (idauta, marka, model), który został najwcześniej wypożyczony (decyduje datawyp).
+SELECT a.idauta, a.marka, a.model FROM auta AS a, wypożyczenia AS w WHERE a.idauta=w.idauta ORDER BY w.datawyp ASC LIMIT 1
+
+Imiona i nazwiska osób, które wypożyczyły kiedykolwiek samochód nr 1. 
+SELECT k.imie, k.nazwisko FROM klienci AS k, wypozyczenia AS w, auta AS a WHERE k.idklienta=w.idklienta AND a.idauta=w.idauta AND a.idauta=1 
+Jakie auta (marka, model) kiedykolwiek wypożyczyła u nas osoba nr 4? 
+SELECT a.marka, a.model FROM auta AS a, wypozyczenia AS w, klienci AS k WHERE a.idauta=w.idauta AND k.idklienta=w.idklienta AND k.idklienta=4
+Jakie auta (marka, model) kiedykolwiek wypożyczyła u nas osoba o nazwisku "Pastewniak"?
+SELECT a.marka, a.model FROM auta INNER JOIN klienci INNER JOIN wypozyczenia WHERE k.idklienta= w.idklienta AND a.idauta= w.idauta AND k.nazwisko="Pastewniak"
+Wyświetl imiona i nazwiska klientów którzy wypożyczyli fiata punt
+SELECT k.imie k.nazwisko FROM klienci AS k, auta AS a, wypozyczenia AS w WHERE k.idklienta = w.idklienta AND  a.idauta = w.idauta AND a.marka="Fiat" and a.model="punto" 
+Aktualizacja danych w bazie
+Zmien nazwisko klienta o id=4 na psikuta
+UPDATE klienci SET nazwisko="Psikuta" WHERE idklienta=4;
+Zmien idklienta=3 na 12
+UPDATE klienci SET idklienta=12 WHERE idklienta=3;
